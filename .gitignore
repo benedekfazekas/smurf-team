@@ -1,0 +1,52 @@
+# === Java ===
+*.class
+*.jar
+*.war
+*.ear
+
+# === Logs ===
+*.log
+logs/
+spring.log
+
+# === IntelliJ IDEA ===
+.idea/
+*.iml
+*.iws
+out/
+
+# === VS Code ===
+.vscode/
+
+# === Eclipse ===
+.project
+.classpath
+.settings/
+.target/
+
+# === Build folders ===
+target/
+build/
+
+# === Gradle ===
+.gradle/
+!gradle-wrapper.jar
+gradle-app.setting
+
+# === Maven ===
+.mvn/
+!mvn/wrapper/maven-wrapper.jar
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
+
+# === Temp Files ===
+*.swp
+*.bak
+*.tmp
+
+# k6 files
+results.json
+summary.json
+report.html
