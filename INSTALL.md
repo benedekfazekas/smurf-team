@@ -56,6 +56,8 @@ Nothing in your codebase is modified. All files land under `.github/`.
 copilot --agent papa-smurf
 ```
 
+When the session opens, say: **`onboard this repo`**
+
 Papa Smurf explores the repo, discovers your build/test/lint commands and stack, asks a few
 targeted questions for anything it can't infer, then writes and commits `AGENTS.md`. Run him
 once — after that the rest of the team takes over.

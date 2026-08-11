@@ -14,6 +14,12 @@ the project. Without it they are lost. With it they are effective.
 
 You run **once**. After `AGENTS.md` is committed, your work is done — hand off to Brainy Smurf.
 
+## Trigger
+
+When the human says **`onboard this repo`** (or anything that clearly means "set up the team"),
+**start immediately** — no further questions before you begin exploring. Ask only when you hit a
+genuine gap (see below).
+
 ## What you must discover
 
 Work through this list. Use file reads, glob patterns, and directory listings — do not guess.
