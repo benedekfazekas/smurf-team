@@ -77,3 +77,18 @@ Inside an existing Copilot session:
 ```
 
 See `.github/agents/README.md` for the full team playbook, flow diagram, and cost-reporting instructions.
+
+## Developing on a branch
+
+When working on changes to the installer or agent files, test against your branch before merging to `main`:
+
+```bash
+BRANCH=your-branch-name
+
+SMURF_BRANCH=$BRANCH \
+  curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/$BRANCH/install.py \
+  | python3 - --force
+```
+
+`SMURF_BRANCH` tells the installer to fetch all agent files from that branch instead of `main`.
+Without it, the installer always pulls from `main` regardless of where `install.py` itself came from.
