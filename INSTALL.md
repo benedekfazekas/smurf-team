@@ -56,10 +56,7 @@ Nothing in your codebase is modified. All files land under `.github/`.
 copilot --agent papa-smurf
 ```
 
-Papa Smurf starts onboarding on your first message — no special phrase needed. He explores the
-repo, discovers your build/test/lint commands and stack, asks a few targeted questions for anything
-he can't infer, then writes and commits `AGENTS.md`. Run him once — after that the rest of the
-team takes over.
+When the session opens, say **`La la la!`** — Papa Smurf starts onboarding immediately.
 
 ## Usage
 
