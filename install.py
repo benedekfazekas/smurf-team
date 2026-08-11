@@ -13,6 +13,7 @@ Usage:
 """
 
 import argparse
+import ssl
 import sys
 import urllib.request
 from pathlib import Path
@@ -37,10 +38,59 @@ def die(msg: str) -> None:
     sys.exit(1)
 
 
-def fetch(url: str) -> bytes:
+def _ssl_context():
+    """Return the best available SSL context."""
+    import ssl
+    # Try certifi first (most reliable cross-platform)
     try:
-        with urllib.request.urlopen(url) as resp:  # noqa: S310
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        pass
+    # macOS: load system keychain certs
+    if sys.platform == "darwin":
+        ctx = ssl.create_default_context()
+        try:
+            import subprocess
+            result = subprocess.run(
+                ["security", "find-certificate", "-a", "-p",
+                 "/System/Library/Keychains/SystemRootCertificates.keychain"],
+                capture_output=True, text=True
+            )
+            if result.returncode == 0 and result.stdout:
+                import tempfile, os
+                with tempfile.NamedTemporaryFile(mode="w", suffix=".pem", delete=False) as f:
+                    f.write(result.stdout)
+                    tmp = f.name
+                try:
+                    ctx = ssl.create_default_context(cafile=tmp)
+                    return ctx
+                finally:
+                    os.unlink(tmp)
+        except Exception:
+            pass
+    return ssl.create_default_context()
+
+
+def fetch(url: str) -> bytes:
+    import ssl
+    ctx = _ssl_context()
+    req = urllib.request.Request(url)
+    try:
+        with urllib.request.urlopen(req, context=ctx) as resp:
             return resp.read()
+    except ssl.SSLCertVerificationError:
+        print("warning: SSL verification failed — retrying without verification", file=sys.stderr)
+        print("         (fix: run `pip3 install certifi` or on macOS run the", file=sys.stderr)
+        print("          'Install Certificates.command' in your Python folder)", file=sys.stderr)
+        ctx_noverify = ssl.create_default_context()
+        ctx_noverify.check_hostname = False
+        ctx_noverify.verify_mode = ssl.CERT_NONE
+        try:
+            with urllib.request.urlopen(req, context=ctx_noverify) as resp:
+                return resp.read()
+        except Exception as exc:
+            die(f"could not fetch {url}: {exc}")
     except Exception as exc:
         die(f"could not fetch {url}: {exc}")
 
