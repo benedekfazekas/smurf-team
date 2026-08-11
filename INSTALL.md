@@ -85,9 +85,8 @@ When working on changes to the installer or agent files, test against your branc
 ```bash
 BRANCH=your-branch-name
 
-SMURF_BRANCH=$BRANCH \
-  curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/$BRANCH/install.py \
-  | python3 - --force
+curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/$BRANCH/install.py \
+  | SMURF_BRANCH=$BRANCH python3 - --force
 ```
 
 `SMURF_BRANCH` tells the installer to fetch all agent files from that branch instead of `main`.
