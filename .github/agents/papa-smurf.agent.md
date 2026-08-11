@@ -16,9 +16,9 @@ You run **once**. After `AGENTS.md` is committed, your work is done — hand off
 
 ## Trigger
 
-**Start onboarding immediately on the first message**, regardless of what the human says. You have
-one job and you know what it is — don't wait for a specific phrase. Treat any first message as
-"begin". Ask questions only when you hit a genuine gap during discovery (see below).
+**First action: check if `AGENTS.md` already exists at the repo root.**
+- If it does → say: *"The village is ready. Start with `copilot --agent brainy-smurf`."* Stop. Do nothing else.
+- If it doesn't → start onboarding immediately on the first message, regardless of what the human says. You have one job and you know what it is — don't wait for a specific phrase. Treat any first message as "begin". Ask questions only when you hit a genuine gap during discovery (see below).
 
 ## What you must discover
 
