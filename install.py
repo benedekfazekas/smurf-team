@@ -23,6 +23,7 @@ BRANCH = "main"
 BASE_URL = f"https://raw.githubusercontent.com/{REPO}/{BRANCH}"
 
 FILES = [
+    ".github/agents/papa-smurf.agent.md",
     ".github/agents/architect-smurf.agent.md",
     ".github/agents/brainy-smurf.agent.md",
     ".github/agents/grouchy-smurf.agent.md",
@@ -125,10 +126,10 @@ def install(force: bool) -> None:
     else:
         print(f"\nInstalled {len(written)} file(s).")
         print("\nNext steps:")
-        print("  1. Create AGENTS.md at your repo root with project conventions")
-        print("     (build cmd, test cmd, lint cmd, stack overview).")
-        print("  2. Commit the new files.")
-        print("  3. Start with:  copilot --agent brainy-smurf")
+        print("  1. Run Papa Smurf to generate AGENTS.md for your project:")
+        print("       copilot --agent papa-smurf")
+        print("  2. Review and commit the generated AGENTS.md.")
+        print("  3. Start work:  copilot --agent brainy-smurf")
         print("     or see .github/agents/README.md for the full usage guide.")
 
 

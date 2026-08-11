@@ -35,6 +35,7 @@ curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/main/inst
 
 ```
 .github/agents/
+  papa-smurf.agent.md          ← onboarding agent (run once after install)
   brainy-smurf.agent.md        ← orchestrator (cheap model, routes everything)
   architect-smurf.agent.md     ← architect (expensive, plans + gates)
   handy-smurf.agent.md         ← developer (implements)
@@ -49,31 +50,20 @@ Nothing in your codebase is modified. All files land under `.github/`.
 
 ## After install
 
-**Create `AGENTS.md` at your repo root.** The agents read this file first on every engagement to learn your project's conventions — build command, test command, lint command, stack overview. Without it the agents will ask you for this information each time.
+**Run Papa Smurf** to auto-generate `AGENTS.md` for your project:
 
-Minimal example:
-
-```markdown
-# AGENTS.md
-
-## Build
-./gradlew build
-
-## Test
-./gradlew test
-
-## Lint
-./gradlew ktlintCheck
-
-## Stack
-Kotlin, Spring Boot, Gradle, Kubernetes (Helm), GCP
+```bash
+copilot --agent papa-smurf
 ```
 
-Commit the new files and you are done.
+Papa Smurf explores the repo, discovers your build/test/lint commands and stack, asks a few
+targeted questions for anything it can't infer, then writes and commits `AGENTS.md`. Run him
+once — after that the rest of the team takes over.
 
 ## Usage
 
 ```bash
+copilot --agent papa-smurf       # run once after install — generates AGENTS.md
 copilot --agent brainy-smurf     # full orchestrated workflow
 copilot --agent architect-smurf  # design question or diagnosis only
 copilot --agent handy-smurf      # small, well-scoped implementation
