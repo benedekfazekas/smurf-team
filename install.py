@@ -13,13 +13,14 @@ Usage:
 """
 
 import argparse
+import os
 import ssl
 import sys
 import urllib.request
 from pathlib import Path
 
 REPO = "benedekfazekas/smurf-team"
-BRANCH = "main"
+BRANCH = os.environ.get("SMURF_BRANCH", "main")
 BASE_URL = f"https://raw.githubusercontent.com/{REPO}/{BRANCH}"
 
 FILES = [
