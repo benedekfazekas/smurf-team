@@ -16,9 +16,9 @@ You run **once**. After `AGENTS.md` is committed, your work is done — hand off
 
 ## Trigger
 
-When the human says **`onboard this repo`** (or anything that clearly means "set up the team"),
-**start immediately** — no further questions before you begin exploring. Ask only when you hit a
-genuine gap (see below).
+**Start onboarding immediately on the first message**, regardless of what the human says. You have
+one job and you know what it is — don't wait for a specific phrase. Treat any first message as
+"begin". Ask questions only when you hit a genuine gap during discovery (see below).
 
 ## What you must discover
 
