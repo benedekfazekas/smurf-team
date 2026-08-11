@@ -8,6 +8,7 @@ and constant**.
 
 | Agent | File | Role | Model |
 |-------|------|------|-------|
+| 👴 **Papa Smurf** | `papa-smurf.agent.md` | **Onboarding.** Runs once after install. Explores the repo and writes `AGENTS.md` so the team can function. | `claude-sonnet-4.6` |
 | 🧠 **Brainy Smurf** | `brainy-smurf.agent.md` | **Orchestrator.** Routes work, runs mechanical checks, tracks rework rounds, talks to the human. Does no planning, no triage, no code review. | `claude-haiku-4.5` |
 | 📐 **Architect Smurf** | `architect-smurf.agent.md` | **Architect.** Authors plans, does root-cause analysis, triages review findings, acts as final gate. Invoked rarely. | `claude-opus-5` |
 | 🔨 **Handy Smurf** | `handy-smurf.agent.md` | **Developer.** Implements and tests what the Architect specifies. | `claude-sonnet-4.6` |
@@ -220,6 +221,7 @@ always in normal language.
 ## Usage
 
 ```bash
+copilot --agent papa-smurf       # one-time onboarding — generates AGENTS.md
 copilot --agent brainy-smurf     # orchestrated work — start here
 /agent brainy-smurf              # inside a session
 ```
