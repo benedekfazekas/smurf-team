@@ -10,26 +10,55 @@ Adds four Copilot custom agents — Brainy, Architect, Handy, and Grouchy — to
 
 ## Install
 
-Run from your **repo root**:
+Run from your **repo root**.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/main/install.py | python3
-```
-
-Or download and run:
+### Option 1 — Download, inspect, run (recommended)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/main/install.py -o install.py
+less install.py          # under 200 lines, no eval, writes only under .github/
 python3 install.py
-# optionally remove the script after
 rm install.py
 ```
 
 To overwrite files that already exist:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/main/install.py | python3 - --force
+python3 install.py --force
 ```
+
+### Option 2 — Clone and copy (zero trust in a script)
+
+Fully equivalent to Option 1; `cp` overwrites instead of `--force`:
+
+```bash
+rm -rf /tmp/smurf-team
+git clone --depth 1 https://github.com/benedekfazekas/smurf-team.git /tmp/smurf-team
+mkdir -p .github
+cp -r /tmp/smurf-team/.github/agents /tmp/smurf-team/.github/instructions .github/
+```
+
+### Option 3 — Branch testing
+
+When working on changes to the installer or agent files, test against your branch before merging to `main`:
+
+```bash
+BRANCH=your-branch-name
+
+curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/$BRANCH/install.py -o install.py
+SMURF_BRANCH=$BRANCH python3 install.py --force
+rm install.py
+```
+
+`SMURF_BRANCH` tells the installer to fetch all agent files from that branch instead of `main`.
+Without it, the installer always pulls from `main` regardless of where `install.py` itself came from.
+
+### Security
+
+The installer transfers files only over verified TLS and aborts if verification fails — it will
+never proceed with an unverified connection. The files it writes are AI agent instructions for a
+Copilot agent with shell access; treat them with the same scrutiny you would apply to any
+third-party dependency.
 
 ## What gets installed
 
@@ -75,17 +104,3 @@ Inside an existing Copilot session:
 ```
 
 See `.github/agents/README.md` for the full team playbook, flow diagram, and cost-reporting instructions.
-
-## Developing on a branch
-
-When working on changes to the installer or agent files, test against your branch before merging to `main`:
-
-```bash
-BRANCH=your-branch-name
-
-curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/$BRANCH/install.py \
-  | SMURF_BRANCH=$BRANCH python3 - --force
-```
-
-`SMURF_BRANCH` tells the installer to fetch all agent files from that branch instead of `main`.
-Without it, the installer always pulls from `main` regardless of where `install.py` itself came from.
