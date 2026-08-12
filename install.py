@@ -5,11 +5,7 @@ Smurf Team installer.
 Copies the Copilot agent files into the current git repository.
 
 Usage:
-  # Run directly
   python3 install.py
-
-  # Or via curl (run from your repo root)
-  curl -fsSL https://raw.githubusercontent.com/benedekfazekas/smurf-team/main/install.py | python3
 """
 
 import argparse
@@ -42,7 +38,6 @@ def die(msg: str) -> None:
 
 def _ssl_context():
     """Return the best available SSL context."""
-    import ssl
     # Try certifi first (most reliable cross-platform)
     try:
         import certifi
@@ -51,7 +46,6 @@ def _ssl_context():
         pass
     # macOS: load system keychain certs
     if sys.platform == "darwin":
-        ctx = ssl.create_default_context()
         try:
             import subprocess
             result = subprocess.run(
@@ -75,24 +69,20 @@ def _ssl_context():
 
 
 def fetch(url: str) -> bytes:
-    import ssl
     ctx = _ssl_context()
     req = urllib.request.Request(url)
     try:
         with urllib.request.urlopen(req, context=ctx) as resp:
             return resp.read()
-    except ssl.SSLCertVerificationError:
-        print("warning: SSL verification failed — retrying without verification", file=sys.stderr)
-        print("         (fix: run `pip3 install certifi` or on macOS run the", file=sys.stderr)
-        print("          'Install Certificates.command' in your Python folder)", file=sys.stderr)
-        ctx_noverify = ssl.create_default_context()
-        ctx_noverify.check_hostname = False
-        ctx_noverify.verify_mode = ssl.CERT_NONE
-        try:
-            with urllib.request.urlopen(req, context=ctx_noverify) as resp:
-                return resp.read()
-        except Exception as exc:
-            die(f"could not fetch {url}: {exc}")
+    except ssl.SSLCertVerificationError as exc:
+        die(
+            f"SSL certificate verification failed for {url}: {exc}\n"
+            "  Refusing to continue — the downloaded agent files instruct an AI agent\n"
+            "  that can run shell commands, so an unverified download is not safe.\n"
+            "  Fix your certificate store, then re-run:\n"
+            "    pip3 install certifi\n"
+            "    (macOS) run 'Install Certificates.command' in your Python folder"
+        )
     except Exception as exc:
         die(f"could not fetch {url}: {exc}")
 
@@ -101,7 +91,12 @@ def install(force: bool) -> None:
     cwd = Path.cwd()
 
     if not (cwd / ".git").exists():
-        die("not a git repository root — cd into your repo first")
+        die(
+            f"{cwd} is not a git repository root (no .git directory).\n"
+            "  The installer writes into ./.github/ of the current directory, so run it\n"
+            "  from the top level of the project you want the Smurf Team installed into:\n"
+            "    cd /path/to/your/project && python3 install.py"
+        )
 
     skipped, written = [], []
 
