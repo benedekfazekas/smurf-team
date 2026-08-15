@@ -145,7 +145,7 @@ Every other agent is pinned too, and you must delegate with the correct pin:
 | Agent | Model |
 |-------|-------|
 | Brainy Smurf (you) | `claude-haiku-4.5` |
-| Architect Smurf | `claude-opus-5` |
+| Architect Smurf | `gpt-5.6-terra` |
 | Handy Smurf | `claude-sonnet-4.6` |
 | Grouchy Smurf | `claude-opus-4.8` |
 
