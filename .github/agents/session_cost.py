@@ -35,7 +35,8 @@ MODEL_TO_AGENT: dict[str, str] = {
     "claude-haiku-4.5":  "Brainy Smurf",
     "claude-sonnet-4.6": "Handy Smurf",
     "claude-opus-4.8":   "Grouchy Smurf",
-    "claude-opus-5":     "Architect Smurf",
+    "claude-opus-5":     "Architect Smurf",  # historical (pre-Aug 2026)
+    "gpt-5.6-terra":     "Architect Smurf",
 }
 
 SUMMARY_QUERY = """
