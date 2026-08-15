@@ -226,6 +226,26 @@ copilot --agent brainy-smurf     # orchestrated work — start here
 /agent brainy-smurf              # inside a session
 ```
 
+### Summarize a human-orchestrated session
+
+Use the `summarize-session` skill for a factual snapshot of the current running session. Without
+arguments it reports in the conversation:
+
+```text
+/skills summarize-session
+```
+
+To append the work summary to an existing run and cost log (alongside the `session_cost.py`
+token/cost block), pass its path with `--log`:
+
+```text
+/skills summarize-session --log .github/agents/run_and_cost_logs/my-task.log
+```
+
+The skill writes only the narrative work summary. Token counts, cost, and timing stay in the
+`session_cost.py` output. It appends to an existing regular file only; it never creates,
+truncates, or overwrites a log.
+
 Start with Brainy for anything multi-step; he pulls in the others. For a small task, call the
 specialist directly. See `AGENTS.md` in the repo root for project conventions all four agents
 follow.

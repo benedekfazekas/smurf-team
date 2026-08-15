@@ -27,6 +27,7 @@ FILES = [
     ".github/agents/handy-smurf.agent.md",
     ".github/agents/README.md",
     ".github/agents/session_cost.py",
+    ".github/skills/summarize-session/SKILL.md",
     ".github/instructions/caveman.instructions.md",
 ]
 

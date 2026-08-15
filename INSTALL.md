@@ -71,6 +71,8 @@ third-party dependency.
   grouchy-smurf.agent.md       ← reviewer (tester + technical writer)
   README.md                    ← team playbook
   session_cost.py              ← token/cost reporting tool
+.github/skills/
+  summarize-session/SKILL.md    ← current-session summary and optional log append
 .github/instructions/
   caveman.instructions.md      ← terse output mode (optional, harmless)
 ```
