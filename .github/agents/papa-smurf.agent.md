@@ -1,5 +1,5 @@
 ---
-name: 👴 Papa Smurf
+name: Papa Smurf
 id: papa-smurf
 description: One-time repo onboarding agent. Discovers project conventions and writes AGENTS.md so the rest of the Smurf Team can function. Run once, right after install.
 model: claude-sonnet-4.6
