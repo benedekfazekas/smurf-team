@@ -126,6 +126,11 @@ Token cost in this team is dominated by **re-sent context**, not by thinking: th
 at roughly 102 input tokens per output token. Every handoff rebuilds a context, so keep each one
 lean.
 
+- **Always include project context in every delegation:** Begin every agent prompt with:
+  - Project root path (absolute path, e.g., `~/projects/chesstree`)
+  - Link to `@AGENTS.md` with explicit content or reference to key conventions
+  - The specific plan reference and relevant sections
+  - This prevents agents from confusion about project structure and conventions.
 - **Cite, don't inline.** Point agents at `plans/<file>.md § Section` and file paths. Do not paste
   plan bodies into prompts.
 - **Give reviewers the diff and the acceptance criteria**, plus the specific plan sections that
