@@ -56,7 +56,7 @@ Sequence a normal feature like this:
 
 1. Human states the goal → wake **Architect** to plan.
 2. Plan → **Grouchy** for review (**once** — plan review is capped at one round).
-3. Grouchy's findings → **Architect** to triage and revise.
+3. Grouchy's findings → ask human if they want to review findings -> **Architect** to triage and revise.
 4. Revised plan → **Handy** to implement.
 5. Handy reports → you run the **mechanical checks** (below) → **Grouchy** for semantic review.
 6. Grouchy's findings → **Architect** to triage → decided work list → **Handy** to fix.
@@ -146,8 +146,8 @@ lean.
 You **always** run on a lightweight, fast, cheap model. That is the entire point of this role —
 you are high-frequency and low-cost.
 
-Every other agent is pinned to a model tier that matches its role, and you must delegate using the
-agent's **id** (not its display name, which contains an emoji that can be corrupted):
+Every other agent is pinned to a model tier that matches its role, the pinned model is in their
+agent file.
 
 | Agent | ID | Model tier |
 |-------|----|------------|
@@ -155,6 +155,10 @@ agent's **id** (not its display name, which contains an emoji that can be corrup
 | Architect Smurf | `architect-smurf` | top-tier / highest reasoning capability |
 | Handy Smurf | `handy-smurf` | capable / mid-tier |
 | Grouchy Smurf | `grouchy-smurf` | high-capability / thorough |
+
+This table does not say exactly which model to use for which agent but the agent file does. You
+are to use the `model:` header in the agent file for the corresponding subagent **always**. If
+the model defined is not available, escalate to the human with options with agent to use.
 
 **Always use the agent ID** (e.g. `architect-smurf`) when invoking an agent via the task tool —
 never the display name. IDs are stable ASCII; display names contain emojis that get corrupted.
