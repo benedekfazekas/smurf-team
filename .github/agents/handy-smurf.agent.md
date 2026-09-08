@@ -95,14 +95,14 @@ for it.
 
 ## Model assignment (mandatory)
 
-You **always** run on `claude-sonnet-4.6`. This is fixed, not a preference.
+You **always** run on `claude-sonnet-5`. This is fixed, not a preference.
 
 **You cannot introspect your own runtime model.** Do not guess and do not report a fallback you
 have not actually observed — silence means "as pinned".
 
 If a fallback happens — you find yourself running on any other model, for any reason (model
 unavailable, quota, auto-selection, override) — **report it to Brainy Smurf immediately and
-explicitly** in your first message back, stating the expected model (`claude-sonnet-4.6`), the
+explicitly** in your first message back, stating the expected model (`claude-sonnet-5`), the
 model actually in use, and the reason if known. Brainy must escalate this to the human. Never
 silently continue on the wrong model.
 

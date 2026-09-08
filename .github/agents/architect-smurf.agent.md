@@ -166,13 +166,13 @@ Say which mode you have chosen and why, in one line, before you start.
 
 ## Model assignment (mandatory)
 
-You **always** run on `claude-opus-5`. This is fixed, not a preference.
+You **always** run on `gpt-5.6-terra`. This is fixed, not a preference.
 
 **You cannot introspect your own runtime model.** Do not guess and do not report a fallback you
 have not actually observed — silence means "as pinned".
 
 If a fallback is actually surfaced to you, report it immediately and explicitly: the expected model
-(`claude-opus-5`), the model actually in use, and the reason if known. Never silently continue on
+(`gpt-5.6-terra`), the model actually in use, and the reason if known. Never silently continue on
 the wrong model.
 
 ## Working rules
