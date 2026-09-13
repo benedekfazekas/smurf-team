@@ -7,6 +7,7 @@ and prints the orchestration workflow alongside the token/time report.
 Usage:
     python3 .github/agents/session_cost.py                    # last 10 sessions
     python3 .github/agents/session_cost.py <session-id>       # one session, full breakdown
+    python3 .github/agents/session_cost.py <session-id> --save # write a session log
     python3 .github/agents/session_cost.py --recent N         # last N sessions
     python3 .github/agents/session_cost.py --list             # list sessions with IDs
 
@@ -19,24 +20,20 @@ Cost notes:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
+import os
+import re
 import sqlite3
 import sys
 from pathlib import Path
 
 STORE_DB = Path.home() / ".copilot" / "session-store.db"
 SESSION_STATE_DIR = Path.home() / ".copilot" / "session-state"
+RUN_AND_COST_LOG_DIR = Path(__file__).parent / "run_and_cost_logs"
 
 # 1 nano_aiu = 1e-11 USD (verified against Anthropic API list prices)
 NANO_AIU_TO_USD = 1e-11
-
-# Model pin → agent name (matches brainy-smurf.agent.md model table)
-MODEL_TO_AGENT: dict[str, str] = {
-    "claude-haiku-4.5":  "Brainy Smurf",
-    "claude-sonnet-4.6": "Handy Smurf",
-    "claude-opus-4.8":   "Grouchy Smurf",
-    "claude-opus-5":     "Architect Smurf",
-}
 
 SUMMARY_QUERY = """
 SELECT
@@ -163,13 +160,11 @@ def print_usage(rows: list[dict]) -> None:
 
     W = 22
     print(f"\n  Token & compute-time breakdown by model (Time = Σ per-call duration, not wall clock)")
-    print(f"  {'Agent / Model':<{W+14}} {'Calls':>6} {'Input':>8} {'CacheRead':>10} {'CacheWrite':>11} {'Output':>8} {'Time':>8}  {'Cache%':>7}  {'nano_aiu':>14}  {'Cost':>8}")
+    print(f"  {'Model':<{W+14}} {'Calls':>6} {'Input':>8} {'CacheRead':>10} {'CacheWrite':>11} {'Output':>8} {'Time':>8}  {'Cache%':>7}  {'nano_aiu':>14}  {'Cost':>8}")
     print(f"  {'─'*(W+14)} {'─'*6} {'─'*8} {'─'*10} {'─'*11} {'─'*8} {'─'*8}  {'─'*7}  {'─'*14}  {'─'*8}")
     for r in rows:
-        agent = MODEL_TO_AGENT.get(r["model"], "")
-        label = f"{agent} / {r['model']}" if agent else r["model"]
         print(
-            f"  {label:<{W+14}} {r['api_calls']:>6} "
+            f"  {r['model']:<{W+14}} {r['api_calls']:>6} "
             f"{fmt_tokens(r['input_tokens']):>8} "
             f"{fmt_tokens(r['cache_read_tokens']):>10} "
             f"{fmt_tokens(r['cache_write_tokens']):>11} "
@@ -223,16 +218,14 @@ def _print_rate_cards(rows: list[dict]) -> None:
     type_order = ["input", "cache_read", "cache_write", "output"]
     print(f"\n  Rates ($/1M tokens)")
     header_types = [t for t in type_order if any(t in c for _, c in cards)]
-    print(f"  {'Agent / Model':<36} " + "  ".join(f"{t:<12}" for t in header_types))
+    print(f"  {'Model':<36} " + "  ".join(f"{t:<12}" for t in header_types))
     print(f"  {'─'*36} " + "  ".join("─"*12 for _ in header_types))
     for model, rates in cards:
-        agent = MODEL_TO_AGENT.get(model, "")
-        label = f"{agent} / {model}" if agent else model
         rate_cols = "  ".join(
             f"${rates[t]:.2f}/1M{'':<4}" if t in rates else f"{'—':<12}"
             for t in header_types
         )
-        print(f"  {label:<36} {rate_cols}")
+        print(f"  {model:<36} {rate_cols}")
 
 
 def print_run_log(session_conn: sqlite3.Connection) -> None:
@@ -261,6 +254,22 @@ def _run_ids(session_conn: sqlite3.Connection | None) -> list[str]:
         return []
 
 
+def _summary_kebab_case(summary: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", summary.lower()).strip("-") or "no-summary"
+
+
+def _log_path(rows: list[dict]) -> Path:
+    if not RUN_AND_COST_LOG_DIR.is_dir():
+        sys.exit(f"Log directory not found: {RUN_AND_COST_LOG_DIR}")
+    if not os.access(RUN_AND_COST_LOG_DIR, os.W_OK):
+        sys.exit(f"Log directory is not writable: {RUN_AND_COST_LOG_DIR}")
+
+    session = rows[0]
+    date = session["created_at"][:10]
+    summary = session["summary"] or "(no summary)"
+    return RUN_AND_COST_LOG_DIR / f"{date}-{session['id']}-{_summary_kebab_case(summary)}.log"
+
+
 def print_session(rows: list[dict], session_conn: sqlite3.Connection | None) -> None:
     if not rows:
         return
@@ -273,10 +282,9 @@ def print_session(rows: list[dict], session_conn: sqlite3.Connection | None) -> 
     print(f"\n{'═'*70}")
     print(f"  Session : {sid}")
     print(f"  Created : {created}")
+    print(f"  Summary : {summary}")
     if run_ids:
         print(f"  Task(s) : {', '.join(run_ids)}")
-    else:
-        print(f"  Summary : {summary}")
     print(f"{'═'*70}")
 
     print_usage(rows)
@@ -321,7 +329,14 @@ def main() -> None:
     parser.add_argument("--recent", type=int, default=10, metavar="N",
                         help="Show last N sessions (default: 10)")
     parser.add_argument("--list", action="store_true", help="List recent sessions and exit")
+    parser.add_argument("--save", action="store_true",
+                        help="Write the specified session's report to run_and_cost_logs")
     args = parser.parse_args()
+
+    if args.save and not args.session_id:
+        parser.error("--save requires a session ID")
+    if args.save and args.list:
+        parser.error("--save cannot be used with --list")
 
     store = connect_store()
 
@@ -334,7 +349,19 @@ def main() -> None:
         if not rows:
             sys.exit(f"Session not found: {args.session_id}")
         session_conn = connect_session(args.session_id)
-        print_session(rows, session_conn)
+        if args.save:
+            output_path = _log_path(rows)
+            try:
+                with output_path.open("x", encoding="utf-8") as log_file:
+                    with contextlib.redirect_stdout(log_file):
+                        print_session(rows, session_conn)
+            except FileExistsError:
+                sys.exit(f"Log file already exists: {output_path}")
+            except OSError as error:
+                sys.exit(f"Could not create log file {output_path}: {error}")
+            print(f"Log written: {output_path}")
+        else:
+            print_session(rows, session_conn)
         if session_conn:
             session_conn.close()
     else:
@@ -353,4 +380,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
